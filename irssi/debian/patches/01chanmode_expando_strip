@@ -1,0 +1,18 @@
+Author: Gerfried Fuchs <rhonda@debian.at>	vim:ft=diff:
+Description: Don't expand chanmode by default, BTS #347944
+
+Index: irssi-0.8.15~rc1/src/core/expandos.c
+===================================================================
+--- irssi-0.8.15~rc1.orig/src/core/expandos.c
++++ irssi-0.8.15~rc1/src/core/expandos.c
+@@ -584,7 +584,9 @@ void expandos_init(void)
+ #endif
+ 	settings_add_str("misc", "STATUS_OPER", "*");
+ 	settings_add_str("lookandfeel", "timestamp_format", "%H:%M");
+-	settings_add_bool("lookandfeel", "chanmode_expando_strip", FALSE);
++	/* don't expand by default and expose channel key,
++	 * see debian bug #347944 */
++	settings_add_bool("lookandfeel", "chanmode_expando_strip", TRUE);
+ 
+ 	last_sent_msg = NULL; last_sent_msg_body = NULL;
+ 	last_privmsg_from = NULL; last_public_from = NULL;

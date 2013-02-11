@@ -1,0 +1,19 @@
+Author: Gerfried Fuchs <rhonda@debian.at>	vim:ft=diff:
+Description: remove $sysname $sysarch from default version reply, BTS #373094
+
+Index: irssi-0.8.15~rc1/src/irc/core/ctcp.c
+===================================================================
+--- irssi-0.8.15~rc1.orig/src/irc/core/ctcp.c
++++ irssi-0.8.15~rc1/src/irc/core/ctcp.c
+@@ -327,8 +327,10 @@ void ctcp_init(void)
+ {
+ 	ctcp_cmds = NULL;
+ 
++	/* remove $sysname $sysarch from default version reply, too much info,
++	 * see debian bug #373094 */
+ 	settings_add_str("misc", "ctcp_version_reply",
+-			 PACKAGE_TARNAME" v$J - running on $sysname $sysarch");
++			 PACKAGE_TARNAME" v$J");
+ 	settings_add_str("misc", "ctcp_userinfo_reply", "$Y");
+ 	settings_add_int("flood", "max_ctcp_queue", 5);
+ 

@@ -1,0 +1,2 @@
+?package(irssi):needs="text" section="Applications/Network/Communication" \
+title="Irssi" longtitle="Terminal Based IRC Client" command="/usr/bin/irssi"

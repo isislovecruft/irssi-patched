@@ -1,0 +1,4 @@
+version=3
+opts="uversionmangle=s/-rc/~rc/" \
+http://irssi.org/files/  irssi-([\da-z\.-]+)\.tar\.gz  debian  uupdate
+# Site/Directory         Pattern                       Version  Script

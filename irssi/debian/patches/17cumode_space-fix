@@ -1,0 +1,23 @@
+Author: Pierre Habouzit <madcoder@debian.org>	vim:ft:diff:
+Description: Avoid segfault in with cumode_space
+
+Index: b/src/irc/core/irc-expandos.c
+===================================================================
+--- a/src/irc/core/irc-expandos.c
++++ b/src/irc/core/irc-expandos.c
+@@ -106,7 +106,14 @@ static char *expando_cumode_space(SERVER
+                 return "";
+ 
+ 	ret = expando_cumode(server, item, free_ret);
+-	return *ret == '\0' ? " " : ret;
++	if (*ret == '\0') {
++		if (*free_ret) {
++			g_free(ret);
++			*free_ret = FALSE;
++		}
++		ret = " ";
++	}
++	return ret;
+ }
+ 
+ static void event_join(IRC_SERVER_REC *server, const char *data,

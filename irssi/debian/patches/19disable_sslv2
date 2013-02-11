@@ -1,0 +1,14 @@
+Description: Do not use SSLv2 protocol
+Origin: upstream, r5136
+Author: bazerka
+
+--- a/src/core/network-openssl.c
++++ b/src/core/network-openssl.c
+@@ -406,6 +406,7 @@
+ 		g_error("Could not allocate memory for SSL context");
+ 		return NULL;
+ 	}
++	SSL_CTX_set_options(ctx, SSL_OP_ALL | SSL_OP_NO_SSLv2);
+ 
+ 	if (mycert && *mycert) {
+ 		char *scert = NULL, *spkey = NULL;

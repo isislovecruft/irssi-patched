@@ -1,0 +1,46 @@
+Source: irssi
+Section: net
+Priority: optional
+Maintainer: Gerfried Fuchs <rhonda@debian.org>
+Build-Depends: debhelper (>= 7), autotools-dev, libglib2.0-dev, perl (>= 5.8.1), libperl-dev (>= 5.8.1), libncurses5-dev, libssl-dev, openssl, quilt
+Standards-Version: 3.9.3
+Homepage: http://irssi.org/
+Vcs-Browser: http://git.deb.at/w/pkg/irssi.git
+Vcs-Git: git://git.deb.at/pkg/irssi.git
+
+Package: irssi
+Architecture: any
+Depends: ${shlibs:Depends}, ${perl:Depends}, ${misc:Depends}, perl-base(>= 5.8.1)
+Suggests: irssi-scripts
+Description: terminal based IRC client
+ Irssi is a terminal based IRC client for UNIX systems. It also supports
+ SILC and ICB protocols via plugins.
+ .
+ Features include:
+  * Autologging
+  * Formats and themes
+  * Configurable keybindings
+  * Paste detection
+  * Perl scripting
+  * Irssi-proxy
+  * Transparent upgrading
+  * Recode support
+
+Package: irssi-dev
+Architecture: any
+Depends: irssi, ${misc:Depends}
+Description: terminal based IRC client - development files
+ Irssi is a terminal based IRC client for UNIX systems. It also supports
+ SILC and ICB protocols via plugins.
+ .
+ Features include:
+  * Autologging
+  * Formats and themes
+  * Configurable keybindings
+  * Paste detection
+  * Perl scripting
+  * Irssi-proxy
+  * Transparent upgrading
+  * Recode support
+ .
+ This package includes the development files for the irssi client.

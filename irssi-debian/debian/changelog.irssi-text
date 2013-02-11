@@ -1,0 +1,269 @@
+irssi-text (0.8.9-9) unstable; urgency=low
+
+  * Update to dh-make compat 4 and depend on debhelper >=4
+  * Add a space in the menu file at the end of the line
+
+ -- David Pashley <david@davidpashley.com>  Sat, 28 May 2005 20:30:14 +0100
+
+irssi-text (0.8.9-8) unstable; urgency=low
+
+  * Updated the patch for #186416 to output a better error string
+  * Check for an executable file before we try to execute it with /upgrade
+    (Closes: #242026)
+
+ -- David Pashley <david@davidpashley.com>  Mon, 28 Mar 2005 20:01:38 +0100
+
+irssi-text (0.8.9-7) unstable; urgency=low
+
+  * Only allow /exec to recurse 100 times (Closes: #186416)
+  * Call SIGTSTP rather than SIGSTOP on ^Z (With thanks to Mark Hymers
+    <mark.hymers@ncl.ac.uk>) (Closes: #177108) 
+
+ -- David Pashley <david@davidpashley.com>  Sun, 27 Mar 2005 16:07:19 +0100
+
+irssi-text (0.8.9-6) unstable; urgency=low
+
+  * Include patch to fix Big5 input (from
+    http://www.freshports.org/chinese/irssi/) (Closes: #274201) 
+
+ -- David Pashley <david@davidpashley.com>  Sat, 26 Mar 2005 13:06:45 +0000
+
+irssi-text (0.8.9-5) unstable; urgency=low
+
+  * Redirect Glib critical errors to the status window rather than to stderr
+    (Closes: #270596)
+
+ -- David Pashley <david@davidpashley.com>  Thu, 24 Mar 2005 08:45:34 +0000
+
+irssi-text (0.8.9-4) unstable; urgency=low
+
+  * Correctly lower case chat protocols using g_ascii_strdown() rather than
+    using the deprecated g_strdown() (Closes: #232628)
+
+ -- David Pashley <david@davidpashley.com>  Wed, 23 Mar 2005 08:29:32 +0000
+
+irssi-text (0.8.9-3) unstable; urgency=medium
+
+  * Fix linker errors on IA64 by building with -O2 on that platform too.
+  * Upload with medium urgency to get the previous fixes into sarge
+
+ -- David Pashley <david@davidpashley.com>  Sat, 19 Mar 2005 17:43:07 +0000
+
+irssi-text (0.8.9-2) unstable; urgency=medium
+
+  * Upload medium as it would be useful to get the irssi-common and perl fixes
+    into sarge.
+  * Conflict with irssi-common (Closes: #263320)
+  * Update to Standards-Version 3.6.1
+  * Update to building against libglib2.0
+  * Fix the menu file quoting
+  * Depend on autotools-dev and update config.{status,guess} automatically
+    (Closes: #296989)
+  * Recompile against libperl5.8 (5.8.4) (Closes: #248020, #224930, #247104) 
+
+ -- David Pashley <david@davidpashley.com>  Tue, 15 Mar 2005 07:51:23 +0000
+
+irssi-text (0.8.9-1) unstable; urgency=low
+
+  * Acknowledge NMU
+  * New Maintainer
+
+ -- David Pashley <david@davidpashley.com>  Sun, 25 Jan 2004 13:29:21 +0000
+
+irssi-text (0.8.9-0.1) unstable; urgency=high
+
+  * NMU
+  * New upstream release, which fixes a remote crash with non-x86
+    architectures or with people running certain scripts (nicklist.pl,
+    tab_stop.pl most importantly) (closes: #223650, #223597)
+
+ -- Norbert Tretkowski <nobse@debian.org>  Fri, 12 Dec 2003 10:17:28 +0100
+
+irssi-text (0.8.6-7) unstable; urgency=low
+
+  * Recompiled against perl 5.8.2. This should fix the segfaults. (closes:
+    #219806, #220279)
+  * Fixed the irssi-alternative
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed, 12 Nov 2003 01:12:37 +0200
+
+irssi-text (0.8.6-6) unstable; urgency=low
+
+  * Made the irc alternative point to irssi-text instead of irssi (closes:
+    #216870)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Mon, 27 Oct 2003 22:28:32 +0200
+
+irssi-text (0.8.6-5) unstable; urgency=low
+
+  * Recompiled against perl 5.8.1 (closes: #213288, #213356)
+  * Added irc alternative (closes: #183011)
+  * Added botti manpage (closes: #190538)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Tue, 30 Sep 2003 22:37:52 +0300
+
+irssi-text (0.8.6-4) unstable; urgency=low
+
+  * Recompiled static perl support because modularity turned out to be too
+    inconvenient (closes: #178593 #178594)
+  * Moved manpage from /usr/man to /usr/share/man (closes: #179520)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Tue,  4 Feb 2003 06:57:06 +0000
+
+irssi-text (0.8.6-3) unstable; urgency=low
+
+  * Added manpage by Michael Wiedmann
+  * Perl support is now compiled as a module
+  * Added Suggests: perl-base
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed, 22 Jan 2003 21:44:27 +0200
+
+irssi-text (0.8.6-2) unstable; urgency=low
+
+  * Added "Replaces: irssi-scripts (<= 8)"
+  * Enabled SSL support, with a specific permission to be linked against
+    OpenSSL
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sat, 23 Nov 2002 14:37:38 +0200
+
+irssi-text (0.8.6-1) unstable; urgency=low
+
+  * New upstream release (closes: #166456)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Thu, 21 Nov 2002 22:50:31 +0200
+
+irssi-text (0.8.5-4) unstable; urgency=low
+
+  * Fixed formatting and added mention of the xirssi and irssi-snapshot
+    packages to the package description.
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sun,  8 Sep 2002 00:53:24 +0300
+
+irssi-text (0.8.5-3) unstable; urgency=low
+
+  * Recompiled against perl 5.8 (closes: #158024)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sun, 25 Aug 2002 13:30:28 +0300
+
+irssi-text (0.8.5-2) unstable; urgency=low
+
+  * $(CFLAGS) is now really passed to make in debian/rules, so the package is
+    built without -O2 on ia64 (closes: #152912)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Fri, 19 Jul 2002 18:02:49 +0300
+
+irssi-text (0.8.5-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Thu, 20 Jun 2002 00:45:43 +0300
+
+irssi-text (0.8.4-2) unstable; urgency=high
+
+  * Made the package build without -O2 on ia64, due to a bug in gcc
+    (closes: #140274)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Thu, 28 Mar 2002 17:59:35 +0200
+
+irssi-text (0.8.4-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed, 13 Mar 2002 18:25:25 +0200
+
+irssi-text (0.8.2-2) unstable; urgency=low
+
+  * Added Conflict on irssi-scripts-1 and Suggests on newer versions
+    (closes: #138090)
+  * debian/rules now doesn't override CFLAGS if DEB_BUILD_OPTIONS includes
+    nocflags
+  * Updated the package description
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed, 13 Mar 2002 15:58:15 +0200
+
+irssi-text (0.8.2-1) unstable; urgency=low
+
+  * New upstream release
+  * Added HTML files to /usr/share/doc
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Tue, 12 Mar 2002 20:55:38 +0200
+
+irssi-text (0.8.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed speeling error in the copyright file (closes: #131698)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sun, 17 Feb 2002 17:32:18 +0200
+
+irssi-text (0.7.98.3-2) unstable; urgency=low
+
+  * Made perl support ready for perl 5.6.1, thanks to Branden O'Dea
+    (closes: #95535)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sun, 17 Feb 2002 17:32:12 +0200
+
+irssi-text (0.7.98.3-1) unstable; urgency=low
+
+  * New upstream release (closes: #90139)
+  * Include the libfe_perl files (closes: #90189)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Mon, 19 Mar 2001 17:17:25 +0200
+
+irssi-text (0.7.98.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Recompiled with perl-5.6 (closes: #86157)
+  * Added alternative for irssi(1) man-page (closes: #80845)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Fri, 23 Feb 2001 16:48:43 +0200
+
+irssi-text (0.7.97.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Tue, 19 Dec 2000 15:22:56 +0200
+
+irssi-text (0.7.97.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed,  6 Dec 2000 21:40:44 +0200
+
+irssi-text (0.7.97-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sun,  3 Dec 2000 21:35:03 +0200
+
+irssi-text (0.7.96-2) unstable; urgency=low
+
+  * Added startup-howto to /usr/share/doc
+  * Applied 0.7.96-2 bugfixes from upstream
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Mon, 30 Oct 2000 17:48:34 +0200
+
+irssi-text (0.7.96-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Thu, 19 Oct 2000 23:22:54 +0300
+
+irssi-text (0.7.95-2) unstable; urgency=medium
+
+  * Applied patch to fix remote crash
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed, 23 Aug 2000 10:21:36 +0300
+
+irssi-text (0.7.95-1) unstable; urgency=low
+
+  * New upstream release
+  * Fixed debian/rules clean (closes: Bug#69105)
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Sun, 13 Aug 2000 22:03:53 +0300
+
+irssi-text (0.7.94-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Pekka Aleksi Knuutila <pa@debian.org>  Wed, 26 Jul 2000 21:40:40 +0300
+

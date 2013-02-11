@@ -1,0 +1,14 @@
+Description: Remove OpenSSL SSL_OP_ALL. Patch from upstream.
+Author:  Emanuele Giaquinta
+Fixes: http://bugs.irssi.org/index.php?do=details&task_id=841
+
+--- src/core/network-openssl.c
++++ src/core/network-openssl.c
+@@ -406,6 +406,7 @@
+                g_error("Could not allocate memory for SSL context");
+                return NULL;
+        }
++       SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
+ 
+        if (mycert && *mycert) {
+                char *scert = NULL, *spkey = NULL;

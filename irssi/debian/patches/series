@@ -6,5 +6,9 @@
 12manpage-fix
 17cumode_space-fix
 18bind_utf8-fix
-19disable_sslv2
+## 19disable_sslv2 includes SSL_ALL_OP
+#19disable_sslv2
+## The upstream patch included in 19disable_sslv2 was changed and accepted
+## upstream to the revised patch included in 22rm-ssl-all-op
+22rm-ssl-all-op
 20fix_ssl_proxy_hostname_check

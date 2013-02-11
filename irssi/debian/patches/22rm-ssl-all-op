@@ -1,9 +1,11 @@
-Description: Remove OpenSSL SSL_OP_ALL. Patch from upstream.
 Author:  Emanuele Giaquinta
 Fixes: http://bugs.irssi.org/index.php?do=details&task_id=841
+Description: Remove OpenSSL SSL_OP_ALL. Patch from upstream.
+Committer: Isis Lovecruft <isis@torproject.org>
+Bug: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=667014
 
---- src/core/network-openssl.c
-+++ src/core/network-openssl.c
+--- a/src/core/network-openssl.c
++++ b/src/core/network-openssl.c
 @@ -406,6 +406,7 @@
                 g_error("Could not allocate memory for SSL context");
                 return NULL;

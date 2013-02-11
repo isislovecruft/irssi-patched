@@ -1,0 +1,10 @@
+01chanmode_expando_strip
+02ctcp_version_reply
+03firsttimer_text
+## 06gnutls-support by David Pashley <david@davidpashley.com>
+#06gnutls-support
+12manpage-fix
+17cumode_space-fix
+18bind_utf8-fix
+19disable_sslv2
+20fix_ssl_proxy_hostname_check

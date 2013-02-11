@@ -327,10 +327,8 @@ void ctcp_init(void)
 {
 	ctcp_cmds = NULL;
 
-	/* remove $sysname $sysarch from default version reply, too much info,
-	 * see debian bug #373094 */
 	settings_add_str("misc", "ctcp_version_reply",
-			 PACKAGE_TARNAME" v$J");
+			 PACKAGE_TARNAME" v$J - running on $sysname $sysarch");
 	settings_add_str("misc", "ctcp_userinfo_reply", "$Y");
 	settings_add_int("flood", "max_ctcp_queue", 5);
 

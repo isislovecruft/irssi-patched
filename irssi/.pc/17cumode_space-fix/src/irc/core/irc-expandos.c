@@ -106,14 +106,7 @@ static char *expando_cumode_space(SERVER_REC *server, void *item, int *free_ret)
                 return "";
 
 	ret = expando_cumode(server, item, free_ret);
-	if (*ret == '\0') {
-		if (*free_ret) {
-			g_free(ret);
-			*free_ret = FALSE;
-		}
-		ret = " ";
-	}
-	return ret;
+	return *ret == '\0' ? " " : ret;
 }
 
 static void event_join(IRC_SERVER_REC *server, const char *data,

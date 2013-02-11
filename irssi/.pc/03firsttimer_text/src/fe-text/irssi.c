@@ -81,8 +81,6 @@ static int dirty, full_redraw, dummy;
 static GMainLoop *main_loop;
 int quitting;
 
-/* add debian informations for first time users,
- * see debian bug #393707 */
 static const char *firsttimer_text =
 	"Looks like this is the first time you've run irssi.\n"
 	"This is just a reminder that you really should go read\n"
@@ -90,11 +88,7 @@ static const char *firsttimer_text =
 	"and more irssi beginner info at http://www.irssi.org\n"
 	"\n"
 	"For the truly impatient people who don't like any automatic\n"
-	"window creation or closing, just type: /MANUAL-WINDOWS\n"
-	"\n"
-	"For Debian specific help type \"/connect irc.debian.org\"\n"
-	"and \"/join #debian\" (without the quotes) and ask your\n"
-	"question.";
+	"window creation or closing, just type: /MANUAL-WINDOWS";
 static int display_firsttimer = FALSE;
 
 

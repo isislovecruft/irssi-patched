@@ -584,9 +584,7 @@ void expandos_init(void)
 #endif
 	settings_add_str("misc", "STATUS_OPER", "*");
 	settings_add_str("lookandfeel", "timestamp_format", "%H:%M");
-	/* don't expand by default and expose channel key,
-	 * see debian bug #347944 */
-	settings_add_bool("lookandfeel", "chanmode_expando_strip", TRUE);
+	settings_add_bool("lookandfeel", "chanmode_expando_strip", FALSE);
 
 	last_sent_msg = NULL; last_sent_msg_body = NULL;
 	last_privmsg_from = NULL; last_public_from = NULL;

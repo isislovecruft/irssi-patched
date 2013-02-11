@@ -141,112 +141,59 @@ static gboolean match_hostname(const char *cert_hostname, const char *hostname)
 	return FALSE;
 }
 
-/** check if a the IP address of the server matches the resolved hostname in the certificate */
-static gboolean match_address(const char *cert_dns_name, const char *hostname)
-{
-  /** unsure if we want this to work for windoze we'll have to do
-      #include <winsock2.h>
-      and do some things with WORDS and stuff. */
-  struct hostent *hn_res = gethostbyname(hostname);
-  struct hostent *cn_res = gethostbyname(cert_dns_name);
-  unsigned int ic = 0;
-  unsigned int ih = 0;
-  char hnip;
-  char cnip;
-
-  if (hn_res == NULL) {
-    g_warning("Unabled to resolve server hostname %s", hostname);
-    return FALSE;
-  } else { while (hn_res -> hn_addr_list[ih] != NULL) {
-      char *hn_ipaddr = inet_ntoa( *( struct in_addr*)(hp -> hn_addr_list[ih]));
-      strncopy(hn_ipaddr, hnip, 20);
-      g_warning("Server %s at %s", hn_res->hn_name, hnip);
-      ih++;
-    };
-    hn_has_resolved = TRUE;
-  };	
-  if (cn_res == NULL) {
-    g_warning("Unabled to resolve hostname in server certificate: %s",
-	      cert_dns_name);
-    return FALSE;
-  } else { while (cn_res -> cn_addr_list[ic] != NULL) {
-      char *cn_ipaddr = inet_ntoa( *( struct in_addr*)(cn_res -> cn_addr_list[ic]));
-      strncopy(cn_ipaddr, cnip, 20);
-      g_warning("Server certificate hostname %s resolved to: %s",
-		cn_res->cn_name, cnip);
-      ic++;
-    };
-    cn_has_resolved = TRUE;
-  };
-  if (cn_has_resolved != TRUE) || (hn_has_resolved != TRUE) {
-      g_warning("Unable to resolve certificate or server hostname...");
-      return FALSE;
-    } else {
-    if (strncmp(cnip, hnip)) {
-      return TRUE;
-    };
-  };
-};
-
-
 /* based on verify_extract_name from tls_client.c in postfix */
 static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
 {
-  int gen_index, gen_count;
-  gboolean matched = FALSE, has_dns_name = FALSE;
-  const char *cert_dns_name;
-  char *cert_subject_cn;
-  const GENERAL_NAME *gn;
-  STACK_OF(GENERAL_NAME) * gens;
+	int gen_index, gen_count;
+	gboolean matched = FALSE, has_dns_name = FALSE;
+	const char *cert_dns_name;
+	char *cert_subject_cn;
+	const GENERAL_NAME *gn;
+	STACK_OF(GENERAL_NAME) * gens;
 
-  /* Verify the dNSName(s) in the peer certificate against the hostname. */
-  gens = X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0);
-  if (gens) {
-    gen_count = sk_GENERAL_NAME_num(gens);
-    for (gen_index = 0; gen_index < gen_count && !matched; ++gen_index) {
-      gn = sk_GENERAL_NAME_value(gens, gen_index);
-      if (gn->type != GEN_DNS)
-	continue;
+	/* Verify the dNSName(s) in the peer certificate against the hostname. */
+	gens = X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0);
+	if (gens) {
+		gen_count = sk_GENERAL_NAME_num(gens);
+		for (gen_index = 0; gen_index < gen_count && !matched; ++gen_index) {
+			gn = sk_GENERAL_NAME_value(gens, gen_index);
+			if (gn->type != GEN_DNS)
+				continue;
 
-      /* Even if we have an invalid DNS name, we still ultimately
-	 ignore the CommonName, because subjectAltName:DNS is
-	 present (though malformed). */
-      has_dns_name = TRUE;
-      cert_dns_name = tls_dns_name(gn);
-      if (cert_dns_name && *cert_dns_name) {
-	matched = match_hostname(cert_dns_name, hostname);
-      }
-    }
+			/* Even if we have an invalid DNS name, we still ultimately
+			   ignore the CommonName, because subjectAltName:DNS is
+			   present (though malformed). */
+			has_dns_name = TRUE;
+			cert_dns_name = tls_dns_name(gn);
+			if (cert_dns_name && *cert_dns_name) {
+				matched = match_hostname(cert_dns_name, hostname);
+			}
+    	}
 
-    /* Free stack *and* member GENERAL_NAME objects */
-    sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
-  }
-
-  if (has_dns_name) {
-    if (! matched) {
-      ip_matched = match_address(cert_dns_name, hostname);
-      if (ip_matched) {
-	g_warning("IP addresses for certificate hostname and server hostname match!");
-	return ip_matched;
-      } else {
-	/* The CommonName in the issuer DN is obsolete when SubjectAltName is available. */
-	g_warning("None of the Subject Alt Names in the certificate match hostname '%s'", hostname);
-      }
-      return matched;
-    } else { /* No subjectAltNames, look at CommonName */
-      cert_subject_cn = tls_text_name(X509_get_subject_name(cert), NID_commonName);
-      if (cert_subject_cn && *cert_subject_cn) {
-	matched = match_hostname(cert_subject_cn, hostname);
-	if (! matched) {
-	  g_warning("SSL certificate common name '%s' doesn't match host name '%s'", cert_subject_cn, hostname);
+	    /* Free stack *and* member GENERAL_NAME objects */
+	    sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
 	}
-      } else {
-	g_warning("No subjectAltNames and no valid common name in certificate");
-      }
-      free(cert_subject_cn);
-    }
-  }
-  return matched;
+
+	if (has_dns_name) {
+		if (! matched) {
+			/* The CommonName in the issuer DN is obsolete when SubjectAltName is available. */
+			g_warning("None of the Subject Alt Names in the certificate match hostname '%s'", hostname);
+		}
+		return matched;
+	} else { /* No subjectAltNames, look at CommonName */
+		cert_subject_cn = tls_text_name(X509_get_subject_name(cert), NID_commonName);
+	    if (cert_subject_cn && *cert_subject_cn) {
+	    	matched = match_hostname(cert_subject_cn, hostname);
+	    	if (! matched) {
+				g_warning("SSL certificate common name '%s' doesn't match host name '%s'", cert_subject_cn, hostname);
+	    	}
+	    } else {
+	    	g_warning("No subjectAltNames and no valid common name in certificate");
+	    }
+	    free(cert_subject_cn);
+	}
+
+	return matched;
 }
 
 static gboolean irssi_ssl_verify(SSL *ssl, SSL_CTX *ctx, const char* hostname, X509 *cert)

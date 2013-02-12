@@ -210,49 +210,49 @@ struct addrinfo net_getallhostsbyname(const char *name)
     certificate */
 static gboolean match_address(const char *cert_dns_name, const char *hostname)
 {
-    /** unsure if we want this to work for windoze we'll have to do
-        #include <winsock2.h>
-        and do some things with WORDS and stuff. */
-    struct hostent *hn_res = gethostbyname(hostname);
-    struct hostent *cn_res = gethostbyname(cert_dns_name);
-    unsigned int ic = 0;
-    unsigned int ih = 0;
-    char hnip;
-    char cnip;
+    /** if we want this to work for windoze we'll have to do #include
+        <winsock2.h> and do some things with WORDS and stuff.
 
-    if (hn_res == NULL) {
-        g_warning("Unabled to resolve server hostname %s", hostname);
+        xxx this won't work for .onion addresses. */
+    struct addrlist *hn_res, *cn_res, *hn, *cn;
+    unsigned int ih, ii;
+    addrlist *diff, *first, *card;
+
+    hostname[NI_MAXHOST] = "";
+    cert_dns_name[NI_MAXHOST] = "";
+
+    hn_res = net_getaddrinfo(hostname);
+    cn_res = net_getaddrinfo(cert_dns_name);
+
+    ii = 0;
+    ih = 0;
+    first = NULL;
+    for (hn = hn_res; hn != NULL; hn->next) {
+        haddr = hn->this;
+        for (cn = cn_res; cn != NULL; cn->next) {
+            caddr = cn->this;
+            match = strcasecmp(haddr, caddr);
+            if (match != 0) {
+                diff = (addrlist*)malloc(sizeof(addrlist));
+                diff->this = haddr;
+                diff->next = first;
+                first = diff;
+                ii++;
+            }
+        }
+        for (card = diff; card != NULL; diff->next) {
+            if (strcasecmp(haddr, diff->this) != 0)
+                ih++;
+        }
+    }
+    cardi = *ii;
+    cardh = *ih;
+    /** If the cardinality of (the intersection of the host resolves and the
+        cert resolves isn't zero, then there was something extra/missing. */
+    if (cardi != cardh)
         return FALSE;
-    } else {
-        while (hn_res -> hn_addr_list[ih] != NULL) {
-            char *hn_ipaddr = inet_ntoa( *( struct in_addr*)(hp -> hn_addr_list[ih]));
-            strncopy(hn_ipaddr, hnip, 20);
-            g_warning("Server %s at %s", hn_res->hn_name, hnip);
-            ih++;
-        };
-        hn_has_resolved = TRUE;
-    };
-    if (cn_res == NULL) {
-        g_warning("Unabled to resolve hostname in server certificate: %s", cert_dns_name);
-        return FALSE;
-    } else {
-        while (cn_res -> cn_addr_list[ic] != NULL) {
-            char *cn_ipaddr = inet_ntoa( *( struct in_addr*)(cn_res -> cn_addr_list[ic]));
-            strncopy(cn_ipaddr, cnip, 20);
-            g_warning("Server certificate hostname %s resolved to: %s", cn_res->cn_name, cnip);
-            ic++;
-        };
-        cn_has_resolved = TRUE;
-    };
-    if (cn_has_resolved != TRUE) || (hn_has_resolved != TRUE) {
-            g_warning("Unable to resolve certificate or server hostname...");
-            return FALSE;
-        } else {
-        if (strncmp(cnip, hnip)) {
-            return TRUE;
-        };
-    };
-};
+    return TRUE;
+}
 
 /* based on verify_extract_name from tls_client.c in postfix */
 static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
@@ -291,7 +291,7 @@ static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
         if (! matched) {
             ip_matched = match_address(cert_dns_name, hostname);
             if (ip_matched) {
-                g_warning("IP addresses for certificate hostname and server hostname match!");
+                g_warning("IP addresses for certificate hostname and server hostname match!"); // xxx need log_write function from log.c
                 return ip_matched;
             } else {
                 /* The CommonName in the issuer DN is obsolete when SubjectAltName is available. */
@@ -525,7 +525,7 @@ static GIOChannel *irssi_ssl_get_iochannel(GIOChannel *handle, const char *hostn
 		return NULL;
 	}
     SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
-    
+
 	if (mycert && *mycert) {
 		char *scert = NULL, *spkey = NULL;
 		scert = convert_home(mycert);

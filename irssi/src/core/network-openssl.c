@@ -141,7 +141,73 @@ static gboolean match_hostname(const char *cert_hostname, const char *hostname)
 	return FALSE;
 }
 
-/** check if a the IP address of the server matches the resolved hostname in the certificate */
+#include <stdio.h>
+#include <stdlib.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+
+#ifndef NI_MAXHOST
+#define NI_MAXHOST 1025
+#endif
+
+/** Used for storing resolved IP addresses. */
+typedef struct addrlist
+{
+    struct sockaddr this;
+    addrlist *next;
+}
+
+/** Resolve a hostname to all of its IP addresses.
+
+    returns: An array containing struct sockaddr ipaddr, with ipaddr->this =
+    res->ai_addr and ipaddr->next = sockaddr* for each address, terminated by
+    a NULL. If the hostname cannot be resolved, returns NULL.
+
+    &result must be freed later. */
+struct addrinfo net_getallhostsbyname(const char *name)
+{
+    /** Uses getaddrinfo() rather than the deprecated gethostbyname(), and
+        returns all addresses, rather than a random one, as is done in
+        net_gethostbyname(). */
+    const struct addrinfo hints;
+    struct addrinfo *res, **result;
+    addrlist *addrs, *end, *last;
+    int error, count;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_socktype = SOCK_STREAM;
+
+    error = getaddrinfo(name, NULL, &hints, &result);
+    if (error != 0) {
+        char *error_msg = gai_strerror(error)
+        g_warning("Error: getaddrinfo(): %s", error_msg);
+        return NULL;
+    }
+
+    count = 0;
+    end = NULL;
+    last = (addrlist*)malloc(sizeof(addrlist));
+    last = end;
+    for (res = result; res != NULL; res = res->ai_next) {
+        while (last->next != NULL)
+            last = last->next;
+        addrs = (addrlist*)malloc(sizeof(addrlist));
+        memcpy(&addrs->this, res->ai_addr; res->ai_addrlen);
+        addrs->next = NULL;
+        last->next = addrs;
+        count++;
+    }
+
+    freeaddrinfo(res);
+
+    if (count > 0)
+        return addrs;
+    return NULL;
+}
+
+/** Check if a the IP address of the server matches the resolved hostname in the
+    certificate */
 static gboolean match_address(const char *cert_dns_name, const char *hostname)
 {
     /** unsure if we want this to work for windoze we'll have to do

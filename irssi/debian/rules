@@ -32,7 +32,7 @@ config.status: patch configure
 			 --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info \
 			 --sysconfdir=/etc \
 	--without-servertest --enable-ipv6 --with-bot --with-proxy \
-	--enable-perl --with-perl-lib=vendor
+	--with-socks --enable-perl --with-perl-lib=vendor
 
 
 build: build-arch build-indep

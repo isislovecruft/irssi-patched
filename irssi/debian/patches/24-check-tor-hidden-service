@@ -1,0 +1,28 @@
+Author: Isis Agora Lovecruft <isis@torproject.org>
+Forwarded: no
+Last-Update: 2013-05-25
+Subject: Check if address is .onion before trying to check SSL cert CN.
+
+  * Fix a bug where checks on the common name in the IRC server's SSL cert
+    would fail due to 0123456789abcdef.onion not being the name on the
+    certificate if the host reuses service certificates for both standard
+    access as well as Tor Hidden Service access.
+
+diff --git a/src/core/network-openssl.c b/src/core/network-openssl.c
+index c9a9bf8..60da7c4 100644
+--- a/src/core/network-openssl.c
++++ b/src/core/network-openssl.c
+@@ -264,6 +264,13 @@ static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
+     const GENERAL_NAME *gn;
+     STACK_OF(GENERAL_NAME) * gens;
+ 
++    /* Check if we're trying to connect to a .onion Hidden Service first */
++    chat *dot = strrchr(hostname, '.');
++    if (dot && !strcmp(dot, ".onion")) {
++      g_message("Skipping SSL certificate Common Name check for Tor Hidden Service.");
++      return TRUE;
++    }
++
+     /* Verify the dNSName(s) in the peer certificate against the hostname. */
+     gens = X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0);
+     if (gens) {

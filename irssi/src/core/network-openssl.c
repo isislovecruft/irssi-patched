@@ -264,6 +264,13 @@ static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
     const GENERAL_NAME *gn;
     STACK_OF(GENERAL_NAME) * gens;
 
+    /* Check if we're trying to connect to a .onion Hidden Service first */
+    chat *dot = strrchr(hostname, '.');
+    if (dot && !strcmp(dot, ".onion")) {
+      g_message("Skipping SSL certificate Common Name check for Tor Hidden Service.");
+      return TRUE;
+    }
+
     /* Verify the dNSName(s) in the peer certificate against the hostname. */
     gens = X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0);
     if (gens) {

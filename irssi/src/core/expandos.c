@@ -18,6 +18,9 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <glib.h>
+#include <glib/gprintf.h>
+
 #include "core.h"
 #include "module.h"
 #include "modules.h"
@@ -35,6 +38,10 @@
 
 #ifdef HAVE_SYS_UTSNAME_H
 #  include <sys/utsname.h>
+#endif
+
+#ifndef IRSSI_VERSION_DATE
+  #define IRSSI_VERSION_DATE 20130525
 #endif
 
 #define MAX_EXPANDO_SIGNALS 10
@@ -404,7 +411,9 @@ static char *expando_target(SERVER_REC *server, void *item, int *free_ret)
 static char *expando_releasedate(SERVER_REC *server, void *item, int *free_ret)
 {
         *free_ret = TRUE;
-	return g_strdup_printf("%d", IRSSI_VERSION_DATE);
+        int version = 20130525;
+        const gchar ret = g_strdup_printf("%d", version);
+        return ret;
 }
 
 /* client release time (in HHMM format) */

@@ -165,14 +165,14 @@ typedef struct addrlist
     a NULL. If the hostname cannot be resolved, returns NULL.
 
     &result must be freed later. */
-struct addrinfo net_getallhostsbyname(const char *name)
+struct addrlist net_getallhostsbyname(const char *name)
 {
     /** Uses getaddrinfo() rather than the deprecated gethostbyname(), and
         returns all addresses, rather than a random one, as is done in
         net_gethostbyname(). */
     const struct addrinfo hints;
     struct addrinfo *res, **result;
-    addrlist *addrs, *end, *last;
+    struct addrlist *addrs, *end, *last;
     int error, count;
 
     memset(&hints, 0, sizeof(struct addrinfo));
@@ -201,8 +201,9 @@ struct addrinfo net_getallhostsbyname(const char *name)
 
     freeaddrinfo(res);
 
-    if (count > 0)
-        return addrs;
+    if (count > 0) {
+      return addrs;
+    }
     return NULL;
 }
 
@@ -216,7 +217,8 @@ static gboolean match_address(const char *cert_dns_name, const char *hostname)
         xxx this won't work for .onion addresses. */
     struct addrlist *hn_res, *cn_res, *hn, *cn;
     unsigned int ih, ii;
-    addrlist *diff, *first, *card;
+    unsigned int cardi, cardh;
+    struct addrlist *diff, *first, *card;
 
     hostname[NI_MAXHOST] = "";
     cert_dns_name[NI_MAXHOST] = "";
@@ -245,12 +247,14 @@ static gboolean match_address(const char *cert_dns_name, const char *hostname)
                 ih++;
         }
     }
+
     cardi = *ii;
     cardh = *ih;
+    
     /** If the cardinality of (the intersection of the host resolves and the
         cert resolves isn't zero, then there was something extra/missing. */
     if (cardi != cardh)
-        return FALSE;
+      return FALSE;
     return TRUE;
 }
 
@@ -258,15 +262,15 @@ static gboolean match_address(const char *cert_dns_name, const char *hostname)
 static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
 {
     int gen_index, gen_count;
-    gboolean matched = FALSE, has_dns_name = FALSE;
+    gboolean matched = FALSE, has_dns_name = FALSE, ip_matched = TRUE;
     const char *cert_dns_name;
     char *cert_subject_cn;
     const GENERAL_NAME *gn;
     STACK_OF(GENERAL_NAME) * gens;
 
     /* Check if we're trying to connect to a .onion Hidden Service first */
-    chat *dot = strrchr(hostname, '.');
-    if (dot && !strcmp(dot, ".onion")) {
+    char *dot = g_strrstr(hostname, '.');
+    if (dot && g_strcmp0(dot, ".onion")) {
       g_message("Skipping SSL certificate Common Name check for Tor Hidden Service.");
       return TRUE;
     }

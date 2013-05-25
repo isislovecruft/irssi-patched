@@ -13,3 +13,4 @@
 24rm-ssl-all-op
 20fix_ssl_proxy_hostname_check
 23add-ip-cert-check
+24-check-tor-hidden-service

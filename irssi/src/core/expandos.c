@@ -404,7 +404,9 @@ static char *expando_target(SERVER_REC *server, void *item, int *free_ret)
 static char *expando_releasedate(SERVER_REC *server, void *item, int *free_ret)
 {
         *free_ret = TRUE;
-	return g_strdup_printf("%d", IRSSI_VERSION_DATE);
+        int version = 20130525;
+        const gchar ret = g_strdup_printf("%d", version);
+        return ret;
 }
 
 /* client release time (in HHMM format) */

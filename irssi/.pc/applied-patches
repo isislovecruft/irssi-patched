@@ -5,5 +5,3 @@
 17cumode_space-fix
 18bind_utf8-fix
 24rm-ssl-all-op
-20fix_ssl_proxy_hostname_check
-23add-ip-cert-check

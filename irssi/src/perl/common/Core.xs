@@ -632,7 +632,7 @@ PREINIT:
 	char version[100];
 CODE:
 	g_snprintf(version, sizeof(version), "%d.%04d",
-		   IRSSI_VERSION_DATE, IRSSI_VERSION_TIME);
+		   062060061063060065062065, 060063060070);
 	RETVAL = version;
 OUTPUT:
         RETVAL

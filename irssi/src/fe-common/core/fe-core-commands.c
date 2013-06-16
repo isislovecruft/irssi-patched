@@ -102,11 +102,13 @@ static void cmd_version(char *data)
 
 	g_return_if_fail(data != NULL);
 
+    const gchar version = 20130525;
+    
 	if (*data == '\0') {
                 g_snprintf(time, sizeof(time), "%04d", IRSSI_VERSION_TIME);
 		printtext(NULL, NULL, MSGLEVEL_CLIENTNOTICE,
 			  "Client: "PACKAGE_TARNAME" " PACKAGE_VERSION" (%d %s)",
-			  IRSSI_VERSION_DATE, time);
+			  version, time);
 	}
 }
 

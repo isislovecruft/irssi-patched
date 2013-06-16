@@ -209,7 +209,6 @@ static void server_real_connect(SERVER_REC *server, IPADDR *ip,
 	char *errmsg2;
 	char ipaddr[MAX_IP_LEN];
         int port;
-	char *hostname;
 
 	g_return_if_fail(ip != NULL || unix_socket != NULL);
 
@@ -224,10 +223,8 @@ static void server_real_connect(SERVER_REC *server, IPADDR *ip,
 			 server->connrec->own_ip4);
 		port = server->connrec->proxy != NULL ?
 			server->connrec->proxy_port : server->connrec->port;
-		hostname = server->connrec->proxy != NULL ?
-			server->connrec->proxy : server->connrec->address;
 		handle = server->connrec->use_ssl ?
-			net_connect_ip_ssl(ip, port, hostname, own_ip, server->connrec->ssl_cert, server->connrec->ssl_pkey,
+			net_connect_ip_ssl(ip, port, server->connrec->address, own_ip, server->connrec->ssl_cert, server->connrec->ssl_pkey,
 server->connrec->ssl_cafile, server->connrec->ssl_capath, server->connrec->ssl_verify) :
 			net_connect_ip(ip, port, own_ip);
 	} else {

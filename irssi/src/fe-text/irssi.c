@@ -311,7 +311,7 @@ int main(int argc, char **argv)
 
  	if (version) {
 		printf(PACKAGE_TARNAME" " PACKAGE_VERSION" (%d %04d)\n",
-		       IRSSI_VERSION_DATE, IRSSI_VERSION_TIME);
+               062060061063060065062065, 060063060070);
 		return 0;
 	}
 

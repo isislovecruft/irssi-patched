@@ -141,184 +141,59 @@ static gboolean match_hostname(const char *cert_hostname, const char *hostname)
 	return FALSE;
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
-#ifndef NI_MAXHOST
-#define NI_MAXHOST 1025
-#endif
-
-/** Used for storing resolved IP addresses. */
-typedef struct addrlist
-{
-    struct sockaddr this;
-    addrlist *next;
-}
-
-/** Resolve a hostname to all of its IP addresses.
-
-    returns: An array containing struct sockaddr ipaddr, with ipaddr->this =
-    res->ai_addr and ipaddr->next = sockaddr* for each address, terminated by
-    a NULL. If the hostname cannot be resolved, returns NULL.
-
-    &result must be freed later. */
-struct addrinfo net_getallhostsbyname(const char *name)
-{
-    /** Uses getaddrinfo() rather than the deprecated gethostbyname(), and
-        returns all addresses, rather than a random one, as is done in
-        net_gethostbyname(). */
-    const struct addrinfo hints;
-    struct addrinfo *res, **result;
-    addrlist *addrs, *end, *last;
-    int error, count;
-
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_socktype = SOCK_STREAM;
-
-    error = getaddrinfo(name, NULL, &hints, &result);
-    if (error != 0) {
-        char *error_msg = gai_strerror(error)
-        g_warning("Error: getaddrinfo(): %s", error_msg);
-        return NULL;
-    }
-
-    count = 0;
-    end = NULL;
-    last = (addrlist*)malloc(sizeof(addrlist));
-    last = end;
-    for (res = result; res != NULL; res = res->ai_next) {
-        while (last->next != NULL)
-            last = last->next;
-        addrs = (addrlist*)malloc(sizeof(addrlist));
-        memcpy(&addrs->this, res->ai_addr; res->ai_addrlen);
-        addrs->next = NULL;
-        last->next = addrs;
-        count++;
-    }
-
-    freeaddrinfo(res);
-
-    if (count > 0)
-        return addrs;
-    return NULL;
-}
-
-/** Check if a the IP address of the server matches the resolved hostname in the
-    certificate */
-static gboolean match_address(const char *cert_dns_name, const char *hostname)
-{
-    /** if we want this to work for windoze we'll have to do #include
-        <winsock2.h> and do some things with WORDS and stuff.
-
-        xxx this won't work for .onion addresses. */
-    struct addrlist *hn_res, *cn_res, *hn, *cn;
-    unsigned int ih, ii;
-    addrlist *diff, *first, *card;
-
-    hostname[NI_MAXHOST] = "";
-    cert_dns_name[NI_MAXHOST] = "";
-
-    hn_res = net_getaddrinfo(hostname);
-    cn_res = net_getaddrinfo(cert_dns_name);
-
-    ii = 0;
-    ih = 0;
-    first = NULL;
-    for (hn = hn_res; hn != NULL; hn->next) {
-        haddr = hn->this;
-        for (cn = cn_res; cn != NULL; cn->next) {
-            caddr = cn->this;
-            match = strcasecmp(haddr, caddr);
-            if (match != 0) {
-                diff = (addrlist*)malloc(sizeof(addrlist));
-                diff->this = haddr;
-                diff->next = first;
-                first = diff;
-                ii++;
-            }
-        }
-        for (card = diff; card != NULL; diff->next) {
-            if (strcasecmp(haddr, diff->this) != 0)
-                ih++;
-        }
-    }
-    cardi = *ii;
-    cardh = *ih;
-    /** If the cardinality of (the intersection of the host resolves and the
-        cert resolves isn't zero, then there was something extra/missing. */
-    if (cardi != cardh)
-        return FALSE;
-    return TRUE;
-}
-
 /* based on verify_extract_name from tls_client.c in postfix */
 static gboolean irssi_ssl_verify_hostname(X509 *cert, const char *hostname)
 {
-    int gen_index, gen_count;
-    gboolean matched = FALSE, has_dns_name = FALSE;
-    const char *cert_dns_name;
-    char *cert_subject_cn;
-    const GENERAL_NAME *gn;
-    STACK_OF(GENERAL_NAME) * gens;
+	int gen_index, gen_count;
+	gboolean matched = FALSE, has_dns_name = FALSE;
+	const char *cert_dns_name;
+	char *cert_subject_cn;
+	const GENERAL_NAME *gn;
+	STACK_OF(GENERAL_NAME) * gens;
 
-    /* Check if we're trying to connect to a .onion Hidden Service first */
-    chat *dot = strrchr(hostname, '.');
-    if (dot && !strcmp(dot, ".onion")) {
-      g_message("Skipping SSL certificate Common Name check for Tor Hidden Service.");
-      return TRUE;
-    }
+	/* Verify the dNSName(s) in the peer certificate against the hostname. */
+	gens = X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0);
+	if (gens) {
+		gen_count = sk_GENERAL_NAME_num(gens);
+		for (gen_index = 0; gen_index < gen_count && !matched; ++gen_index) {
+			gn = sk_GENERAL_NAME_value(gens, gen_index);
+			if (gn->type != GEN_DNS)
+				continue;
 
-    /* Verify the dNSName(s) in the peer certificate against the hostname. */
-    gens = X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0);
-    if (gens) {
-        gen_count = sk_GENERAL_NAME_num(gens);
-        for (gen_index = 0; gen_index < gen_count && !matched; ++gen_index) {
-            gn = sk_GENERAL_NAME_value(gens, gen_index);
-            if (gn->type != GEN_DNS)
-        continue;
+			/* Even if we have an invalid DNS name, we still ultimately
+			   ignore the CommonName, because subjectAltName:DNS is
+			   present (though malformed). */
+			has_dns_name = TRUE;
+			cert_dns_name = tls_dns_name(gn);
+			if (cert_dns_name && *cert_dns_name) {
+				matched = match_hostname(cert_dns_name, hostname);
+			}
+    	}
 
-        /* Even if we have an invalid DNS name, we still ultimately
-           ignore the CommonName, because subjectAltName:DNS is
-           present (though malformed). */
-            has_dns_name = TRUE;
-            cert_dns_name = tls_dns_name(gn);
-            if (cert_dns_name && *cert_dns_name) {
-                matched = match_hostname(cert_dns_name, hostname);
-            }
-        }
+	    /* Free stack *and* member GENERAL_NAME objects */
+	    sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
+	}
 
-        /* Free stack *and* member GENERAL_NAME objects */
-        sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
-    }
-
-    if (has_dns_name) {
-        if (! matched) {
-            ip_matched = match_address(cert_dns_name, hostname);
-            if (ip_matched) {
-                g_warning("IP addresses for certificate hostname and server hostname match!"); // xxx need log_write function from log.c
-                return ip_matched;
-            } else {
-                /* The CommonName in the issuer DN is obsolete when SubjectAltName is available. */
-                g_warning("None of the Subject Alt Names in the certificate match hostname '%s'", hostname);
-            }
-            return matched;
-        } else { /* No subjectAltNames, look at CommonName */
-            cert_subject_cn = tls_text_name(X509_get_subject_name(cert), NID_commonName);
-            if (cert_subject_cn && *cert_subject_cn) {
-                matched = match_hostname(cert_subject_cn, hostname);
-                if (! matched) {
-                    g_warning("SSL certificate common name '%s' doesn't match host name '%s'", cert_subject_cn, hostname);
-                }
-            } else {
-                g_warning("No subjectAltNames and no valid common name in certificate");
-            }
-            free(cert_subject_cn);
-        }
-    }
-    return matched;
+	if (has_dns_name) {
+		if (! matched) {
+			/* The CommonName in the issuer DN is obsolete when SubjectAltName is available. */
+			g_warning("None of the Subject Alt Names in the certificate match hostname '%s'", hostname);
+		}
+		return matched;
+	} else { /* No subjectAltNames, look at CommonName */
+		cert_subject_cn = tls_text_name(X509_get_subject_name(cert), NID_commonName);
+	    if (cert_subject_cn && *cert_subject_cn) {
+	    	matched = match_hostname(cert_subject_cn, hostname);
+	    	if (! matched) {
+				g_warning("SSL certificate common name '%s' doesn't match host name '%s'", cert_subject_cn, hostname);
+	    	}
+	    } else {
+	    	g_warning("No subjectAltNames and no valid common name in certificate");
+	    }
+	    free(cert_subject_cn);
+	}
+    matched = TRUE;
+	return matched;
 }
 
 static gboolean irssi_ssl_verify(SSL *ssl, SSL_CTX *ctx, const char* hostname, X509 *cert)
@@ -532,7 +407,7 @@ static GIOChannel *irssi_ssl_get_iochannel(GIOChannel *handle, const char *hostn
 		return NULL;
 	}
     SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
-
+    
 	if (mycert && *mycert) {
 		char *scert = NULL, *spkey = NULL;
 		scert = convert_home(mycert);

@@ -107,7 +107,8 @@ static void sig_disconnected(SERVER_REC *server)
 
 static void sig_channel_created(CHANNEL_REC *channel)
 {
-	MODULE_DATA_SET(channel, g_new0(MODULE_CHANNEL_REC, 1));
+  void *chan = g_new0(MODULE_CHANNEL_REC, 1);
+  MODULE_DATA_SET(channel, chan);
 }
 
 static void sig_channel_destroyed(CHANNEL_REC *channel)

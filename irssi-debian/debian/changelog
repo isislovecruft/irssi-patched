@@ -1,11 +1,21 @@
+irssi (0.8.15-6) unstable; urgency=low
+
+  * Add support for checking that the SSL cert CN's resolved IP address
+    and the IP address for the server hostname in the requested connection
+    match.
+  * Add support for skipping SSL cert CN checks when connecting to a Tor
+    Hidden Service.
+
+ -- Isis Agora Lovecruft <isis@torproject.org>  Sat, 25 May 2013 03:19:32 +0000
+
 irssi (0.8.15-5) unstable; urgency=low
 
   * Updated bind_utf8-fix patch from upstream bug tracker again
-    (closes: #637036)
+    (closes: #637036).
   * Bump Standards-Version to 3.9.3.
   * Add recommended targets build-{arch,indep} to debian/rules.
 
- -- 
+ -- Gerfried Fuchs <rhonda@debian.org>  Fri, 10 Jun 2011 20:13:15 +0200
 
 irssi (0.8.15-4) unstable; urgency=medium
 
